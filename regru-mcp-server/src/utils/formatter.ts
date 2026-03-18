@@ -27,6 +27,30 @@ export function formatRecordsAsMarkdown(domain: string, records: DnsRecord[]): s
   return lines.join("\n");
 }
 
+function isAvailableStatus(status: string): boolean {
+  const s = status.toLowerCase();
+  return s === "available" || s === "free";
+}
+
+export function formatDomainAvailability(domain: string, status: string): string {
+  const indicator = isAvailableStatus(status) ? "✓" : "✗";
+  return `# Domain Availability\n\n**${domain}** — ${status} ${indicator}`;
+}
+
+export function formatDomainAvailabilityList(results: Array<{ domain: string; status: string }>): string {
+  const lines: string[] = [
+    "# Domain Availability",
+    "",
+    "| Domain | Status |",
+    "|--------|--------|",
+  ];
+  for (const r of results) {
+    const indicator = isAvailableStatus(r.status) ? "✓" : "✗";
+    lines.push(`| ${r.domain} | ${r.status} ${indicator} |`);
+  }
+  return lines.join("\n");
+}
+
 export function formatSuccessMessage(action: string, domain: string, details?: string): string {
   let msg = `Successfully ${action} for **${domain}**`;
   if (details) {

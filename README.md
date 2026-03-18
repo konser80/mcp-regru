@@ -73,6 +73,7 @@ Use the same configuration format supported by your client, pointing to `dist/in
 
 | Tool | Description |
 |------|-------------|
+| `regru_check_domain_availability` | Check if one or more domains are available for registration |
 | `regru_get_dns_records` | Retrieve all DNS records for a domain |
 | `regru_add_a_record` | Add an A record (IPv4) |
 | `regru_add_aaaa_record` | Add an AAAA record (IPv6) |
@@ -91,6 +92,8 @@ Use the same configuration format supported by your client, pointing to `dist/in
 
 Once configured, you can manage DNS through natural language:
 
+- "Is example.com available?"
+- "Check example.com, example.ru and example.net"
 - "Show DNS records for example.com"
 - "Point www.example.com to 1.2.3.4"
 - "Add an MX record for Google Workspace"

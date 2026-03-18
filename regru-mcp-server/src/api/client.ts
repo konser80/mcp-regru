@@ -8,6 +8,7 @@ export interface RegruApiResponse {
     domains?: Array<{
       dname: string;
       result: string;
+      status?: string;
       rrs?: Array<{
         rectype: string;
         subname: string;
@@ -39,14 +40,18 @@ export class RegruClient {
 
   async request(
     endpoint: string,
-    params: Record<string, string> = {}
+    params: Record<string, string> | URLSearchParams = {},
+    options: { skipDomainErrorCheck?: boolean } = {}
   ): Promise<RegruApiResponse> {
-    const body = new URLSearchParams({
-      username: this.username,
-      password: this.password,
-      output_content_type: "plain",
-      ...params,
-    });
+    const body = new URLSearchParams();
+    body.append("username", this.username);
+    body.append("password", this.password);
+    body.append("output_content_type", "plain");
+    if (params instanceof URLSearchParams) {
+      for (const [k, v] of params) body.append(k, v);
+    } else {
+      for (const [k, v] of Object.entries(params)) body.append(k, v);
+    }
 
     const response = await fetch(`${BASE_URL}/${endpoint}`, {
       method: "POST",
@@ -72,7 +77,7 @@ export class RegruClient {
 
     // Check domain-level errors
     const domainResult = data.answer?.domains?.[0];
-    if (domainResult && domainResult.result === "error") {
+    if (!options.skipDomainErrorCheck && domainResult && domainResult.result === "error") {
       const apiError: RegruApiError = {
         result: "error",
         error_code: domainResult.error_code ?? "UNKNOWN_ERROR",
@@ -282,6 +287,16 @@ export class RegruClient {
     return this.request("zone/clear", {
       domain_name: domain,
     });
+  }
+
+  async checkDomain(domain: string): Promise<RegruApiResponse> {
+    return this.request("domain/check", { dname: domain }, { skipDomainErrorCheck: true });
+  }
+
+  async checkDomains(domains: string[]): Promise<RegruApiResponse> {
+    const params = new URLSearchParams();
+    for (const d of domains) params.append("domain_name", d);
+    return this.request("domain/check", params, { skipDomainErrorCheck: true });
   }
 }
 
