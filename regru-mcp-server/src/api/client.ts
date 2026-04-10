@@ -2,6 +2,18 @@ import { RegruApiError, formatApiError, formatUnexpectedError } from "../utils/e
 
 const BASE_URL = "https://api.reg.ru/api/regru2";
 
+export interface RegruService {
+  service_id: number;
+  dname?: string;
+  servtype?: string;
+  subtype?: string;
+  state?: string;
+  expiration_date?: string;
+  creation_date?: string;
+  uplink_service_id?: number;
+  [key: string]: unknown;
+}
+
 export interface RegruApiResponse {
   result: string;
   answer?: {
@@ -24,6 +36,7 @@ export interface RegruApiResponse {
       error_code?: string;
       error_text?: string;
     }>;
+    services?: RegruService[];
   };
   error_code?: string;
   error_text?: string;
@@ -287,6 +300,12 @@ export class RegruClient {
     return this.request("zone/clear", {
       domain_name: domain,
     });
+  }
+
+  async getServiceList(servtype?: string): Promise<RegruApiResponse> {
+    const params: Record<string, string> = {};
+    if (servtype) params.servtype = servtype;
+    return this.request("service/get_list", params, { skipDomainErrorCheck: true });
   }
 
   async checkDomain(domain: string): Promise<RegruApiResponse> {

@@ -51,6 +51,40 @@ export function formatDomainAvailabilityList(results: Array<{ domain: string; st
   return lines.join("\n");
 }
 
+export interface ServiceInfo {
+  service_id: number;
+  dname?: string;
+  servtype?: string;
+  subtype?: string;
+  state?: string;
+  expiration_date?: string;
+  creation_date?: string;
+}
+
+export function formatServiceList(services: ServiceInfo[]): string {
+  if (services.length === 0) {
+    return "No services found.";
+  }
+
+  const lines: string[] = [
+    `# Services (${services.length})`,
+    "",
+    "| # | Domain | Type | State | Expires | Service ID |",
+    "|---|--------|------|-------|---------|------------|",
+  ];
+
+  for (let i = 0; i < services.length; i++) {
+    const s = services[i];
+    const name = s.dname || "—";
+    const stype = [s.servtype, s.subtype].filter(Boolean).join("/") || "—";
+    const state = s.state || "—";
+    const expires = s.expiration_date || "—";
+    lines.push(`| ${i + 1} | ${name} | ${stype} | ${state} | ${expires} | ${s.service_id} |`);
+  }
+
+  return lines.join("\n");
+}
+
 export function formatSuccessMessage(action: string, domain: string, details?: string): string {
   let msg = `Successfully ${action} for **${domain}**`;
   if (details) {

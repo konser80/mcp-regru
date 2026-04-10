@@ -14,6 +14,7 @@ import { registerUpdateRecords } from "./tools/update-records.js";
 import { registerUpdateSoa } from "./tools/update-soa.js";
 import { registerClearZone } from "./tools/clear-zone.js";
 import { registerCheckAvailability } from "./tools/check-availability.js";
+import { registerGetServices } from "./tools/get-services.js";
 
 export function createServer(username: string, password: string): McpServer {
   const server = new McpServer({
@@ -37,6 +38,7 @@ export function createServer(username: string, password: string): McpServer {
   registerUpdateSoa(server, client);
   registerClearZone(server, client);
   registerCheckAvailability(server, client);
+  registerGetServices(server, client);
 
   return server;
 }
