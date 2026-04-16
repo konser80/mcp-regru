@@ -1,3 +1,4 @@
+import { ProxyAgent, fetch as undiciFetch } from "undici";
 import { RegruApiError, formatApiError, formatUnexpectedError } from "../utils/errors.js";
 
 const BASE_URL = "https://api.reg.ru/api/regru2";
@@ -45,10 +46,14 @@ export interface RegruApiResponse {
 export class RegruClient {
   private username: string;
   private password: string;
+  private proxyAgent: ProxyAgent | undefined;
 
-  constructor(username: string, password: string) {
+  constructor(username: string, password: string, proxyUrl?: string) {
     this.username = username;
     this.password = password;
+    if (proxyUrl) {
+      this.proxyAgent = new ProxyAgent(proxyUrl);
+    }
   }
 
   async request(
@@ -66,12 +71,20 @@ export class RegruClient {
       for (const [k, v] of Object.entries(params)) body.append(k, v);
     }
 
-    const response = await fetch(`${BASE_URL}/${endpoint}`, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const fetchOptions: Record<string, any> = {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: body.toString(),
       signal: AbortSignal.timeout(30000),
-    });
+    };
+    if (this.proxyAgent) {
+      fetchOptions["dispatcher"] = this.proxyAgent;
+    }
+
+    const fetchFn = this.proxyAgent ? undiciFetch : fetch;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await fetchFn(`${BASE_URL}/${endpoint}`, fetchOptions as any);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);

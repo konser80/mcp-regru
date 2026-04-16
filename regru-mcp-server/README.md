@@ -18,6 +18,7 @@ npm run build
 |----------|----------|-------------|
 | `REGRU_USERNAME` | Yes | Your Reg.ru account username |
 | `REGRU_PASSWORD` | Yes | Your Reg.ru account password |
+| `REGRU_PROXY` | No | HTTP proxy URL (e.g. `http://user:pass@host:port`) |
 
 ### Claude Code
 
@@ -31,7 +32,8 @@ Add to `~/.claude/settings.json`:
       "args": ["/absolute/path/to/regru-mcp-server/dist/index.js"],
       "env": {
         "REGRU_USERNAME": "your_username",
-        "REGRU_PASSWORD": "your_password"
+        "REGRU_PASSWORD": "your_password",
+        "REGRU_PROXY": "http://user:pass@host:port"
       }
     }
   }

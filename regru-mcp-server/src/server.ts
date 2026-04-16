@@ -16,13 +16,13 @@ import { registerClearZone } from "./tools/clear-zone.js";
 import { registerCheckAvailability } from "./tools/check-availability.js";
 import { registerGetServices } from "./tools/get-services.js";
 
-export function createServer(username: string, password: string): McpServer {
+export function createServer(username: string, password: string, proxyUrl?: string): McpServer {
   const server = new McpServer({
     name: "regru-mcp-server",
     version: "1.0.0",
   });
 
-  const client = new RegruClient(username, password);
+  const client = new RegruClient(username, password, proxyUrl);
 
   registerGetRecords(server, client);
   registerAddAlias(server, client);

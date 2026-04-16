@@ -6,6 +6,7 @@ import { createServer } from "./server.js";
 async function main(): Promise<void> {
   const username = process.env.REGRU_USERNAME;
   const password = process.env.REGRU_PASSWORD;
+  const proxyUrl = process.env.REGRU_PROXY;
 
   if (!username || !password) {
     console.error(
@@ -15,7 +16,11 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const server = createServer(username, password);
+  if (proxyUrl) {
+    console.error(`Using proxy: ${proxyUrl}`);
+  }
+
+  const server = createServer(username, password, proxyUrl);
   const transport = new StdioServerTransport();
 
   await server.connect(transport);

@@ -26,6 +26,7 @@ The server requires your Reg.ru credentials, passed as environment variables:
 |----------|-------------|
 | `REGRU_USERNAME` | Your Reg.ru account username |
 | `REGRU_PASSWORD` | Your Reg.ru account password |
+| `REGRU_PROXY` | HTTP proxy URL, optional (e.g. `http://user:pass@host:port`) |
 
 ### Claude Code
 
@@ -39,7 +40,8 @@ Add to `~/.claude/settings.json`:
       "args": ["/path/to/mcp-regru/regru-mcp-server/dist/index.js"],
       "env": {
         "REGRU_USERNAME": "your_username",
-        "REGRU_PASSWORD": "your_password"
+        "REGRU_PASSWORD": "your_password",
+        "REGRU_PROXY": "http://user:pass@host:port"
       }
     }
   }
@@ -58,7 +60,8 @@ Add to `.cursor/mcp.json` in your project or `~/.cursor/mcp.json` globally:
       "args": ["/path/to/mcp-regru/regru-mcp-server/dist/index.js"],
       "env": {
         "REGRU_USERNAME": "your_username",
-        "REGRU_PASSWORD": "your_password"
+        "REGRU_PASSWORD": "your_password",
+        "REGRU_PROXY": "http://user:pass@host:port"
       }
     }
   }
