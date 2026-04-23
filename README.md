@@ -89,6 +89,8 @@ Use the same configuration format supported by your client, pointing to `dist/in
 | `regru_remove_record` | Remove a specific DNS record |
 | `regru_update_records` | Bulk add/remove DNS records in a single call |
 | `regru_update_soa` | Update SOA record TTL settings |
+| `regru_update_nss` | Replace the domain's authoritative nameservers (with optional glue records) |
+| `regru_get_nss` | Get the domain's current authoritative nameservers |
 | `regru_clear_zone` | Remove all DNS records (destructive!) |
 
 ## Usage Examples

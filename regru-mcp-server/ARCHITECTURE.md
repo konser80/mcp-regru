@@ -30,6 +30,8 @@ regru-mcp-server/
 │   │   ├── remove-record.ts      → regru_remove_record
 │   │   ├── update-records.ts     → regru_update_records
 │   │   ├── update-soa.ts         → regru_update_soa
+│   │   ├── update-nss.ts         → regru_update_nss
+│   │   ├── get-nss.ts            → regru_get_nss
 │   │   └── clear-zone.ts         → regru_clear_zone
 │   └── utils/
 │       ├── formatter.ts      # Форматирование ответов в Markdown
@@ -87,6 +89,8 @@ regru-mcp-server/
 | `removeRecord(domain, subdomain, recordType, content, priority?)` | `zone/remove_record` | Удалить запись |
 | `updateRecords(domain, actions[])` | `zone/update_records` | Пакетное добавление/удаление |
 | `updateSoa(domain, ttl?, minimumTtl?)` | `zone/update_soa` | Обновить SOA TTL |
+| `updateNss(domain, nameservers[])` | `domain/update_nss` | Сменить NS домена (опц. glue-записи) |
+| `getNss(domain)` | `domain/get_nss` | Получить текущие NS-серверы домена |
 | `clearZone(domain)` | `zone/clear` | Очистить зону |
 
 #### Обработка ошибок в `request()`
@@ -157,6 +161,8 @@ regru-mcp-server/
 | `regru_remove_record` | `tools/remove-record.ts` | `zone/remove_record` | — | ✓ |
 | `regru_update_records` | `tools/update-records.ts` | `zone/update_records` | — | ✓ |
 | `regru_update_soa` | `tools/update-soa.ts` | `zone/update_soa` | — | — |
+| `regru_update_nss` | `tools/update-nss.ts` | `domain/update_nss` | — | ✓ |
+| `regru_get_nss` | `tools/get-nss.ts` | `domain/get_nss` | ✓ | — |
 | `regru_clear_zone` | `tools/clear-zone.ts` | `zone/clear` | — | ✓ |
 
 ---

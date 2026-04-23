@@ -12,6 +12,8 @@ import { registerAddCaa } from "./tools/add-caa.js";
 import { registerRemoveRecord } from "./tools/remove-record.js";
 import { registerUpdateRecords } from "./tools/update-records.js";
 import { registerUpdateSoa } from "./tools/update-soa.js";
+import { registerUpdateNss } from "./tools/update-nss.js";
+import { registerGetNss } from "./tools/get-nss.js";
 import { registerClearZone } from "./tools/clear-zone.js";
 import { registerCheckAvailability } from "./tools/check-availability.js";
 import { registerGetServices } from "./tools/get-services.js";
@@ -19,7 +21,7 @@ import { registerGetServices } from "./tools/get-services.js";
 export function createServer(username: string, password: string, proxyUrl?: string): McpServer {
   const server = new McpServer({
     name: "regru-mcp-server",
-    version: "1.0.0",
+    version: "1.4.0",
   });
 
   const client = new RegruClient(username, password, proxyUrl);
@@ -36,6 +38,8 @@ export function createServer(username: string, password: string, proxyUrl?: stri
   registerRemoveRecord(server, client);
   registerUpdateRecords(server, client);
   registerUpdateSoa(server, client);
+  registerUpdateNss(server, client);
+  registerGetNss(server, client);
   registerClearZone(server, client);
   registerCheckAvailability(server, client);
   registerGetServices(server, client);

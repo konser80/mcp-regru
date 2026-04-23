@@ -33,6 +33,7 @@ export interface RegruApiResponse {
         ttl: string;
         minimum_ttl: string;
       };
+      nss?: Array<{ ns: string; ip?: string }>;
       service_id?: string;
       error_code?: string;
       error_text?: string;
@@ -281,19 +282,49 @@ export class RegruClient {
       ttl?: number;
     }>
   ): Promise<RegruApiResponse> {
-    const params: Record<string, string> = {
-      domain_name: domain,
-    };
-    for (let i = 0; i < actions.length; i++) {
-      const a = actions[i];
-      params[`action_list[${i}][action]`] = a.action;
-      params[`action_list[${i}][type]`] = a.type;
-      params[`action_list[${i}][subdomain]`] = a.subdomain;
-      params[`action_list[${i}][content]`] = a.content;
-      if (a.priority !== undefined) params[`action_list[${i}][priority]`] = String(a.priority);
-      if (a.ttl !== undefined) params[`action_list[${i}][ttl]`] = String(a.ttl);
-    }
-    return this.request("zone/update_records", params);
+    const actionList = actions.map((a, i) => {
+      const type = a.type.toUpperCase();
+      if (a.action === "remove") {
+        const rec: Record<string, unknown> = {
+          action: "remove_record",
+          subdomain: a.subdomain,
+          record_type: type,
+          content: a.content,
+        };
+        if (a.priority !== undefined) rec.priority = a.priority;
+        return rec;
+      }
+      const base: Record<string, unknown> = { subdomain: a.subdomain };
+      if (a.ttl !== undefined) base.ttl = a.ttl;
+      switch (type) {
+        case "A":
+          return { action: "add_alias", ...base, ipaddr: a.content };
+        case "AAAA":
+          return { action: "add_aaaa", ...base, ipaddr: a.content };
+        case "CNAME":
+          return { action: "add_cname", ...base, canonical_name: a.content };
+        case "MX":
+          if (a.priority === undefined) {
+            throw new Error(`action[${i}]: MX add requires priority`);
+          }
+          return { action: "add_mx", ...base, mail_server: a.content, priority: a.priority };
+        case "TXT":
+          return { action: "add_txt", ...base, text: a.content };
+        case "NS":
+          return { action: "add_ns", ...base, dns_server: a.content };
+        case "SRV":
+        case "CAA":
+          throw new Error(
+            `action[${i}]: bulk add of ${type} is not supported — use regru_add_${type.toLowerCase()}_record (needs fields that don't fit the generic content/priority shape)`
+          );
+        default:
+          throw new Error(`action[${i}]: unsupported record type "${a.type}"`);
+      }
+    });
+    return this.request("zone/update_records", {
+      input_format: "json",
+      input_data: JSON.stringify({ domain_name: domain, action_list: actionList }),
+    });
   }
 
   async updateSoa(
@@ -312,6 +343,28 @@ export class RegruClient {
   async clearZone(domain: string): Promise<RegruApiResponse> {
     return this.request("zone/clear", {
       domain_name: domain,
+    });
+  }
+
+  async getNss(domain: string): Promise<RegruApiResponse> {
+    return this.request("domain/get_nss", {
+      domain_name: domain,
+    });
+  }
+
+  async updateNss(
+    domain: string,
+    nameservers: Array<{ host: string; ip?: string }>
+  ): Promise<RegruApiResponse> {
+    const nss: Record<string, string> = {};
+    for (let i = 0; i < nameservers.length; i++) {
+      const ns = nameservers[i];
+      nss[`ns${i}`] = ns.host;
+      if (ns.ip) nss[`ns${i}ip`] = ns.ip;
+    }
+    return this.request("domain/update_nss", {
+      input_format: "json",
+      input_data: JSON.stringify({ domain_name: domain, nss }),
     });
   }
 

@@ -85,6 +85,21 @@ export function formatServiceList(services: ServiceInfo[]): string {
   return lines.join("\n");
 }
 
+export function formatNameservers(
+  domain: string,
+  nameservers: Array<{ ns: string; ip?: string }>
+): string {
+  if (nameservers.length === 0) {
+    return `No nameservers configured for **${domain}**.`;
+  }
+  const lines: string[] = [`# Nameservers for ${domain}`, ""];
+  for (let i = 0; i < nameservers.length; i++) {
+    const n = nameservers[i];
+    lines.push(`${i + 1}. ${n.ns}${n.ip ? ` (glue: ${n.ip})` : ""}`);
+  }
+  return lines.join("\n");
+}
+
 export function formatSuccessMessage(action: string, domain: string, details?: string): string {
   let msg = `Successfully ${action} for **${domain}**`;
   if (details) {
